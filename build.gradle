@@ -96,11 +96,13 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-1.19-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.19-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.19-forge:${jei_version}")
-
     implementation fg.deobf("com.ridanisaurus:emendatusenigmatica:${ee_version}+mc${mc_version}")
+
+    // compile against the JEI API but do not include it at runtime
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
 
     compileOnly "mekanism:Mekanism:${mc_version}-${mekanism_version}:api"
     runtimeOnly fg.deobf("mekanism:Mekanism:${mc_version}-${mekanism_version}")// core

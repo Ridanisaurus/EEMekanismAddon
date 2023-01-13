@@ -34,6 +34,9 @@ public class EEMekanismPlugin implements IEmendatusPlugin {
             if (material.getProcessedTypes().contains("dirty_dust")) {
                 EEMekanismRegistrar.registerDirtyDusts(material);
             }
+			if (material.getProcessedTypes().contains("gas")) {
+				EEMekanismRegistrar.registerGases(material);
+			}
 		}
 	}
 

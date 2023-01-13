@@ -17,7 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.data.LanguageProvider;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -398,6 +397,13 @@ public class EEMekanismDataGen {
 					sb.append(material.getLocalizedName());
 					sb.append(" Dust");
 					add(EEMekanismRegistrar.dirtyDustMap.get(material.getId()).get(), sb.toString());
+				}
+				// Gasses
+				if (processedType.contains("gas")) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("Gaseous ");
+					sb.append(material.getLocalizedName());
+					add(EEMekanismRegistrar.gasMap.get(material.getId()).get().getTranslationKey(), sb.toString());
 				}
 			}
 		}
