@@ -21,7 +21,7 @@ def ENV = System.getenv()
 
 version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}+mc${mc_version}"
 group = 'com.ridanisaurus'
-archivesBaseName = 'EEMekanismAddon'
+archivesBaseName = 'EE_Mekanism_Addon'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -111,7 +111,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "eemekanismaddon",
+                "Specification-Title"     : "ee_mekanism_addon",
                 "Specification-Vendor"    : "Ridanisaurus",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
@@ -164,7 +164,8 @@ if (ENV.CURSE_DEPLOY) {
             mainArtifact(jar) {
                 displayName = "EEMekanismAddon-${mc_version}-${mod_version}"
                 relations {
-                    optionalDependency "emendatus-enigmatica"
+                    requiredDependency "emendatus-enigmatica"
+                    requiredDependency "mekanism"
                 }
             }
             changelog = file("changelog.md") // pull the contents of the changelog.md

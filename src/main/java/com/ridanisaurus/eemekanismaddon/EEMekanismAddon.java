@@ -7,7 +7,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(EEMekanismAddon.MOD_ID)
 public class EEMekanismAddon
 {
-    public static final String MOD_ID = "eemekanismaddon";
+    public static final String MOD_ID = "ee_mekanism_addon";
     public static final String MEKANISM = "mekanism";
 
     public EEMekanismAddon()
