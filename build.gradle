@@ -84,8 +84,6 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // JEI
-    maven { url "https://dvs1.progwml6.com/files/maven" }
     // EE
     maven { url "https://maven.saps.dev/releases/" }
     // Local Maven
@@ -98,9 +96,6 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     implementation fg.deobf("com.ridanisaurus:emendatusenigmatica:${ee_version}+mc${mc_version}")
-
-    // at runtime, use the full JEI jar for Forge
-    runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
 
     compileOnly "mekanism:Mekanism:${mc_version}-${mekanism_version}:api"
     runtimeOnly fg.deobf("mekanism:Mekanism:${mc_version}-${mekanism_version}")// core
