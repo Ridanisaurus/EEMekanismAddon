@@ -41,8 +41,8 @@ public class EEMekanismRegistrar {
 
 		ResourceLocation ore = new ResourceLocation(Reference.FORGE, "ores/" + material.getId());
 
-		dirtySlurryMap.put(material.getId(), SLURRIES.register(itemNameDirty, () -> new Slurry(SlurryBuilder.dirty().ore(ore).color(material.getColors().getFluidColor()))));
-		cleanSlurryMap.put(material.getId(), SLURRIES.register(itemNameClean, () -> new Slurry(SlurryBuilder.clean().ore(ore).color(material.getColors().getFluidColor()))));
+		dirtySlurryMap.put(material.getId(), SLURRIES.register(itemNameDirty, () -> new Slurry(SlurryBuilder.dirty().ore(ore).color(material.getColors().getGasColor()))));
+		cleanSlurryMap.put(material.getId(), SLURRIES.register(itemNameClean, () -> new Slurry(SlurryBuilder.clean().ore(ore).color(material.getColors().getGasColor()))));
 	}
 
 	public static void registerCrystals(MaterialModel material) {
@@ -93,6 +93,7 @@ public class EEMekanismRegistrar {
 			builder.with(new GasAttributes.Radiation(material.getGas().getRadioactivity()));
 		}
 		if (material.getGas().isCoolant()) {
+			// TODO: Check if BOTH needs to be created
 			if (material.getGas().getCoolantType().equals("cooled")) {
 				builder.with(new GasAttributes.CooledCoolant(()-> gasMap.get(material.getId()).get(), material.getGas().getThermalEnthalpy(), material.getGas().getConductivity()));
 			} else {

@@ -34,7 +34,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'ee_mekanism_addon'
             mods {
                 examplemod {
                     source sourceSets.main
@@ -46,7 +46,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'ee_mekanism_addon'
             mods {
                 examplemod {
                     source sourceSets.main
@@ -58,7 +58,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'ee_mekanism_addon'
             mods {
                 examplemod {
                     source sourceSets.main
@@ -70,7 +70,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'ee_mekanism_addon', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
             mods {
                 examplemod {
                     source sourceSets.main
@@ -86,9 +86,9 @@ repositories {
     // JEI
     maven { url "https://dvs1.progwml6.com/files/maven" }
     // EE
-    maven { url "https://maven.nanite.dev" }
+    maven { url "https://maven.saps.dev/releases/" }
     // Local Maven
-    mavenLocal()
+//    mavenLocal()
     // Mekanism
     maven { url 'https://modmaven.dev/' }
 }
@@ -98,9 +98,6 @@ dependencies {
 
     implementation fg.deobf("com.ridanisaurus:emendatusenigmatica:${ee_version}+mc${mc_version}")
 
-    // compile against the JEI API but do not include it at runtime
-    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
-    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
     // at runtime, use the full JEI jar for Forge
     runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
 
@@ -146,8 +143,14 @@ publishing {
         }
     }
     repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+        if (ENV.SAPS_DEPLOY) {
+            maven {
+                url "https://maven.saps.dev/releases/"
+                credentials {
+                    username = "rid"
+                    password = "${ENV.SAPS_DEPLOY}"
+                }
+            }
         }
     }
 }
