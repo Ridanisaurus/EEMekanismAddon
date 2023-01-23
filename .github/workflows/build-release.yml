@@ -21,6 +21,7 @@ jobs:
       - name: Build & release to curseforge
         env:
           SAPS_DEPLOY: ${{ secrets.SAPS_DEPLOY }}
+          CURSE_DEPLOY: ${{ secrets.CURSE_DEPLOY }}
         run: |
           chmod +x ./gradlew
           ./gradlew build publish curseforge --stacktrace --no-daemon
