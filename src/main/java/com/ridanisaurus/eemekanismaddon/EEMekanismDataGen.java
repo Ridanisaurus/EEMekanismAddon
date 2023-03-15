@@ -405,6 +405,16 @@ public class EEMekanismDataGen {
 					sb.append(material.getLocalizedName());
 					add(EEMekanismRegistrar.gasMap.get(material.getId()).get().getTranslationKey(), sb.toString());
 				}
+				// Infuse Types
+				if (processedType.contains("infuse_type")) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(material.getLocalizedName());
+					add(EEMekanismRegistrar.infuseMap.get(material.getId()).get().getTranslationKey(), sb.toString());
+					StringBuilder sb2 = new StringBuilder();
+					sb2.append("Enriched ");
+					sb2.append(material.getLocalizedName());
+					add(EEMekanismRegistrar.enrichedMap.get(material.getId()).get(), sb2.toString());
+				}
 			}
 		}
 
