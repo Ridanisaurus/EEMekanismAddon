@@ -1,6 +1,4 @@
 # EE: Mekanism
-#### MC 1.19.2 | Version 1.0.1
+#### MC 1.19.2 | Version 1.0.2
 
-* Added support for Infuse Type and Enriched materials.
-* Fixed a log error regarding tag files generating empty.
-* Moved tint templates from `Emendatus Enigmatica` to `EE: Mekanism` Addon.
+* Fixed missing Infuse Type tags.

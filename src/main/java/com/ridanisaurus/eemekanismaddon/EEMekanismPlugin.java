@@ -49,6 +49,7 @@ public class EEMekanismPlugin implements IEmendatusPlugin {
 		generator.addProvider(true, new EEMekanismDataGen.Lang(generator, registry));
 		generator.addProvider(true, new EEMekanismDataGen.ItemTags(generator, registry));
 		generator.addProvider(true, new EEMekanismDataGen.SlurryTags(generator, registry));
+		generator.addProvider(true, new EEMekanismDataGen.InfuseTypeTags(generator, registry));
 		generator.addProvider(true, new EEMekanismDataGen.Recipes(generator, registry));
 	}
 
