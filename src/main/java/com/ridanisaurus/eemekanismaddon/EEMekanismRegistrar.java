@@ -8,6 +8,8 @@ import mekanism.api.MekanismAPI;
 import mekanism.api.chemical.gas.Gas;
 import mekanism.api.chemical.gas.GasBuilder;
 import mekanism.api.chemical.gas.attribute.GasAttributes;
+import mekanism.api.chemical.infuse.InfuseType;
+import mekanism.api.chemical.infuse.InfuseTypeBuilder;
 import mekanism.api.chemical.slurry.Slurry;
 import mekanism.api.chemical.slurry.SlurryBuilder;
 import mekanism.api.math.FloatingLong;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class EEMekanismRegistrar {
 	public static final DeferredRegister<Slurry> SLURRIES = DeferredRegister.create(MekanismAPI.slurryRegistryName(), Reference.MOD_ID);
 	public static final DeferredRegister<Gas> GASES = DeferredRegister.create(MekanismAPI.gasRegistryName(), Reference.MOD_ID);
+	public static final DeferredRegister<InfuseType> INFUSE_TYPES = DeferredRegister.create(MekanismAPI.infuseTypeRegistryName(), Reference.MOD_ID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
 
 	// Mekanism Compat
@@ -34,6 +37,8 @@ public class EEMekanismRegistrar {
 	public static Map<String, RegistryObject<Item>> clumpMap = new HashMap<>();
 	public static Map<String, RegistryObject<Item>> dirtyDustMap = new HashMap<>();
 	public static Map<String, RegistryObject<Gas>> gasMap = new HashMap<>();
+	public static Map<String, RegistryObject<InfuseType>> infuseMap = new HashMap<>();
+	public static Map<String, RegistryObject<Item>> enrichedMap = new HashMap<>();
 
 	public static void registerSlurries(MaterialModel material) {
 		String itemNameDirty = "dirty_" + material.getId();
@@ -104,9 +109,21 @@ public class EEMekanismRegistrar {
 		gasMap.put(material.getId(), GASES.register(itemName, () -> new Gas(builder)));
 	}
 
+	public static void registerInfuseTypes(MaterialModel material) {
+		String itemName = material.getId();
+		infuseMap.put(material.getId(), INFUSE_TYPES.register(itemName, () -> new InfuseType(InfuseTypeBuilder.builder().color(material.getColors().getGasColor()))));
+		if (material.getProperties().isBurnable()) {
+			enrichedMap.put(material.getId(), ITEMS.register("enriched_" + itemName, () -> new BasicBurnableItem(material, material.getProperties().getBurnTime())));
+		} else {
+			enrichedMap.put(material.getId(), ITEMS.register("enriched_" + itemName, () -> new BasicItem(material)));
+		}
+		// TODO: Add Enriched textures + data gen
+	}
+
 	public static void finalize(IEventBus eventBus) {
-		GASES.register(eventBus);
 		SLURRIES.register(eventBus);
+		GASES.register(eventBus);
+		INFUSE_TYPES.register(eventBus);
 		ITEMS.register(eventBus);
 	}
 }

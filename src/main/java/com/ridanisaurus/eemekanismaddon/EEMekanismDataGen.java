@@ -8,7 +8,9 @@ import com.ridanisaurus.emendatusenigmatica.registries.EERegistrar;
 import com.ridanisaurus.emendatusenigmatica.registries.EETags;
 import com.ridanisaurus.emendatusenigmatica.util.Reference;
 import mekanism.api.chemical.gas.Gas;
+import mekanism.api.chemical.infuse.InfusionStack;
 import mekanism.api.datagen.recipe.builder.*;
+import mekanism.api.recipes.ItemStackToInfuseTypeRecipe;
 import mekanism.api.recipes.ingredients.creator.IngredientCreatorAccess;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -156,6 +158,32 @@ public class EEMekanismDataGen {
 								getItemStack(EERegistrar.dustMap.get(material.getId()).get())
 						).build(consumer, new ResourceLocation(Reference.MOD_ID, "dust/from_dirty_dust/" + material.getId()));
 					}
+					if (processedType.contains("infuse_type")) {
+						// Enriching
+						if (material.isModded() && material.getProperties().getMaterialType().equals("metal")) {
+							ItemStackToItemStackRecipeBuilder.enriching(
+									IngredientCreatorAccess.item().from(EETags.MATERIAL_INGOT.apply(material.getId())),
+									getItemStack(EEMekanismRegistrar.enrichedMap.get(material.getId()).get())
+							).build(consumer, new ResourceLocation(Reference.MOD_ID, "enriched/from_ingot/" + material.getId()));
+						}
+						if (material.isModded() && material.getProperties().getMaterialType().equals("gem")) {
+							ItemStackToItemStackRecipeBuilder.enriching(
+									IngredientCreatorAccess.item().from(EETags.MATERIAL_GEM.apply(material.getId())),
+									getItemStack(EEMekanismRegistrar.enrichedMap.get(material.getId()).get())
+							).build(consumer, new ResourceLocation(Reference.MOD_ID, "enriched/from_gem/" + material.getId()));
+						}
+						// Infusion
+						if (processedType.contains("dust")) {
+							ItemStackToChemicalRecipeBuilder.infusionConversion(
+									IngredientCreatorAccess.item().from(EETags.MATERIAL_DUST.apply(material.getId())),
+									new InfusionStack(EEMekanismRegistrar.infuseMap.get(material.getId()).get(), 10)
+							).build(consumer, new ResourceLocation(Reference.MOD_ID, "infuse_type/from_dust/" + material.getId()));
+						}
+						ItemStackToChemicalRecipeBuilder.infusionConversion(
+								IngredientCreatorAccess.item().from(EEMekanismTags.MATERIAL_ENRICHED.apply(material.getId())),
+								new InfusionStack(EEMekanismRegistrar.infuseMap.get(material.getId()).get(), 80)
+						).build(consumer, new ResourceLocation(Reference.MOD_ID, "infuse_type/from_enriched/" + material.getId()));
+					}
 				}
 			}
 		}
@@ -243,6 +271,20 @@ public class EEMekanismDataGen {
 					}
 					dirtyDustBuilder.save(consumer, new ResourceLocation(Reference.MOD_ID, material.getId() + "_dirty_dust"));
 				}
+				// Enriched
+				if (processedType.contains("infuse_type")) {
+					ItemModelBuilder enrichedBuilder = new ItemModelBuilder("minecraft:item/generated");
+					if (material.getColors().getMaterialColor() == -1) {
+						enrichedBuilder.texture("layer0", new ResourceLocation(Reference.MOD_ID, "items/enriched_" + material.getId()).toString());
+					} else {
+						enrichedBuilder.texture("layer0", new ResourceLocation(Reference.MOD_ID, "items/templates/enriched/00").toString())
+								.texture("layer1", new ResourceLocation(Reference.MOD_ID, "items/templates/enriched/01").toString())
+								.texture("layer2", new ResourceLocation(Reference.MOD_ID, "items/templates/enriched/02").toString())
+								.texture("layer3", new ResourceLocation(Reference.MOD_ID, "items/templates/enriched/03").toString())
+								.texture("layer4", new ResourceLocation(Reference.MOD_ID, "items/templates/enriched/04").toString());
+					}
+					enrichedBuilder.save(consumer, new ResourceLocation(Reference.MOD_ID, "enriched_" + material.getId()));
+				}
 			}
 
 		}
@@ -267,6 +309,7 @@ public class EEMekanismDataGen {
 		private final List<String> mekanismShards = Lists.newArrayList();
 		private final List<String> mekanismClumps = Lists.newArrayList();
 		private final List<String> mekanismDirtyDusts = Lists.newArrayList();
+		private final List<String> mekanismEnriched = Lists.newArrayList();
 
 		@Override
 		protected void buildTags(Consumer<IFinishedGenericJSON> consumer) {
@@ -296,11 +339,18 @@ public class EEMekanismDataGen {
 					if (!mekanismDirtyDusts.contains("#mekanism:dirty_dusts/" + material.getId())) mekanismDirtyDusts.add("#mekanism:dirty_dusts/" + material.getId());
 					new TagBuilder().tag(dirtyDust.toString()).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/dirty_dusts/" + material.getId()));
 				}
+				// Enriched
+				if (processedType.contains("infuse_type")) {
+					ResourceLocation enriched = EEMekanismRegistrar.enrichedMap.get(material.getId()).getId();
+					if (!mekanismEnriched.contains("#mekanism:enriched/" + material.getId())) mekanismEnriched.add("#mekanism:enriched/" + material.getId());
+					new TagBuilder().tag(enriched.toString()).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/enriched/" + material.getId()));
+				}
 			}
-			new TagBuilder().tags(mekanismCrystals).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/crystals"));
-			new TagBuilder().tags(mekanismShards).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/shards"));
-			new TagBuilder().tags(mekanismClumps).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/clumps"));
-			new TagBuilder().tags(mekanismDirtyDusts).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/dirty_dusts"));
+			if (!mekanismCrystals.isEmpty()) new TagBuilder().tags(mekanismCrystals).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/crystals"));
+			if (!mekanismShards.isEmpty()) new TagBuilder().tags(mekanismShards).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/shards"));
+			if (!mekanismClumps.isEmpty()) new TagBuilder().tags(mekanismClumps).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/clumps"));
+			if (!mekanismDirtyDusts.isEmpty()) new TagBuilder().tags(mekanismDirtyDusts).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/dirty_dusts"));
+			if (!mekanismEnriched.isEmpty()) new TagBuilder().tags(mekanismEnriched).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/items/enriched"));
 		}
 		@Override
 		public String getName() {
@@ -332,13 +382,43 @@ public class EEMekanismDataGen {
 					mekanismDirtySlurry.add(dirtySlurry.toString());
 				}
 			}
-			new TagBuilder().tags(mekanismCleanSlurry).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/mekanism/clean"));
-			new TagBuilder().tags(mekanismDirtySlurry).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/mekanism/dirty"));
+			if (!mekanismCleanSlurry.isEmpty()) new TagBuilder().tags(mekanismCleanSlurry).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/mekanism/clean"));
+			if (!mekanismDirtySlurry.isEmpty()) new TagBuilder().tags(mekanismDirtySlurry).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/mekanism/dirty"));
 		}
 
 		@Override
 		public String getName() {
 			return "EE Mekanism Addon Slurry Tags";
+		}
+	}
+
+	public static class InfuseTypeTags extends EETagProvider {
+
+		private final EmendatusDataRegistry registry;
+
+		public InfuseTypeTags(DataGenerator gen, EmendatusDataRegistry registry) {
+			super(gen);
+			this.registry = registry;
+		}
+
+		private final List<String> mekanismInfuseType = Lists.newArrayList();
+
+		@Override
+		protected void buildTags(Consumer<IFinishedGenericJSON> consumer) {
+			for (MaterialModel material : registry.getMaterials()) {
+				List<String> processedType = material.getProcessedTypes();
+				// Infuse Type
+				if (processedType.contains("infuse_type")) {
+					ResourceLocation infuseType = EEMekanismRegistrar.infuseMap.get(material.getId()).getId();
+					mekanismInfuseType.add(infuseType.toString());
+				}
+			}
+			if (!mekanismInfuseType.isEmpty()) new TagBuilder().tags(mekanismInfuseType).save(consumer, new ResourceLocation(EEMekanismAddon.MEKANISM, "/mekanism/infuse_type"));
+		}
+
+		@Override
+		public String getName() {
+			return "EE Mekanism Addon Infuse Type Tags";
 		}
 	}
 
@@ -404,6 +484,16 @@ public class EEMekanismDataGen {
 					sb.append("Gaseous ");
 					sb.append(material.getLocalizedName());
 					add(EEMekanismRegistrar.gasMap.get(material.getId()).get().getTranslationKey(), sb.toString());
+				}
+				// Infuse Types
+				if (processedType.contains("infuse_type")) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(material.getLocalizedName());
+					add(EEMekanismRegistrar.infuseMap.get(material.getId()).get().getTranslationKey(), sb.toString());
+					StringBuilder sb2 = new StringBuilder();
+					sb2.append("Enriched ");
+					sb2.append(material.getLocalizedName());
+					add(EEMekanismRegistrar.enrichedMap.get(material.getId()).get(), sb2.toString());
 				}
 			}
 		}

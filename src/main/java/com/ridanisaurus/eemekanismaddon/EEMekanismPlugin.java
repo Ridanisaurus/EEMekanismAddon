@@ -37,6 +37,9 @@ public class EEMekanismPlugin implements IEmendatusPlugin {
 			if (material.getProcessedTypes().contains("gas")) {
 				EEMekanismRegistrar.registerGases(material);
 			}
+			if (material.getProcessedTypes().contains("infuse_type")) {
+				EEMekanismRegistrar.registerInfuseTypes(material);
+			}
 		}
 	}
 
